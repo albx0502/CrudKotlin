@@ -40,19 +40,26 @@ fun ForgotPasswordScreen(
 
         Button(
             onClick = {
-                resetPassword(email.text,
-                    onPasswordResetSuccess = {
-                        resetSuccess = true
-                        resetError = null
-                    }, onError = { error ->
-                        resetSuccess = false
-                        resetError = error
-                    })
+                if (email.text.isNotEmpty()) {
+                    resetPassword(email.text,
+                        onPasswordResetSuccess = {
+                            resetSuccess = true
+                            resetError = null
+                        },
+                        onError = { error ->
+                            resetSuccess = false
+                            resetError = error
+                        }
+                    )
+                } else {
+                    resetError = "Por favor, ingresa un correo electrónico válido"
+                }
             },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Enviar correo de recuperación")
         }
+
 
         Spacer(modifier = Modifier.height(8.dp))
 

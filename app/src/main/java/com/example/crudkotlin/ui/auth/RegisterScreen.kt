@@ -63,18 +63,19 @@ fun RegisterScreen(
 
         Button(
             onClick = {
-                if (password.text == confirmPassword.text) {
+                if (email.text.isNotEmpty() && password.text.isNotEmpty()) {
                     registerUser(email.text, password.text, onRegisterSuccess) { error ->
                         registerError = error
                     }
                 } else {
-                    registerError = "Passwords do not match"
+                    registerError = "Por favor, completa todos los campos"
                 }
             },
             modifier = Modifier.fillMaxWidth()
-        ){
-            Text("Register")
+        ) {
+            Text("Registrar")
         }
+
 
         Spacer(modifier = Modifier.height(8.dp))
 

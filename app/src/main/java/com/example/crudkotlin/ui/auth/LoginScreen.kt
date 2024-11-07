@@ -66,14 +66,19 @@ fun LoginScreen(
 
         Button(
             onClick = {
-                loginUser(email.text, password.text, onLoginSuccess) { error ->
-                    loginError = error
+                if (email.text.isNotEmpty() && password.text.isNotEmpty()) {
+                    loginUser(email.text, password.text, onLoginSuccess) { error ->
+                        loginError = error
+                    }
+                } else {
+                    loginError = "Por favor, completa todos los campos"
                 }
             },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Login")
         }
+
 
         Spacer(modifier = Modifier.height(8.dp))
 
