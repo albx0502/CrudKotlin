@@ -5,7 +5,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.composable
@@ -13,7 +12,7 @@ import com.example.crudkotlin.ui.auth.ForgotPasswordScreen
 import com.example.crudkotlin.ui.auth.LoginScreen
 import com.example.crudkotlin.ui.auth.RegisterScreen
 import com.example.crudkotlin.ui.profile.ProfileScreen
-
+import com.example.crudkotlin.ui.search.UserSearchScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,7 +36,7 @@ fun AppNavigation() {
             LoginScreen(
                 onLoginSuccess = { navController.navigate("profile") },
                 onNavigateToRegister = { navController.navigate("register") },
-                onNavigateToForgotPassword = { navController.navigate("forgotPassword") } // Navegación corregida
+                onNavigateToForgotPassword = { navController.navigate("forgotPassword") }
             )
         }
         composable("register") {
@@ -46,7 +45,7 @@ fun AppNavigation() {
                 onNavigateToLogin = { navController.popBackStack() }
             )
         }
-        composable("forgotPassword") { // Pantalla de recuperación de contraseña
+        composable("forgotPassword") {
             ForgotPasswordScreen(
                 onPasswordResetSuccess = { navController.navigate("login") },
                 onNavigateToLogin = { navController.popBackStack() }
@@ -54,10 +53,24 @@ fun AppNavigation() {
         }
         composable("profile") {
             ProfileScreen(
-                onLogout = { navController.navigate("login") }
+                onLogout = { navController.navigate("login") },
+                onNavigateToUserSearch = { navController.navigate("userSearch") }
             )
         }
-
-        // Puedes agregar más pantallas aquí, como "profile", cuando estén listas
+        composable("userSearch") {
+            UserSearchScreen(
+                onUserSelected = { userId ->
+                    navController.navigate("profile/$userId")
+                }
+            )
+        }
+        composable("profile/{userId}") { backStackEntry ->
+            val userId = backStackEntry.arguments?.getString("userId")
+            ProfileScreen(
+                onLogout = { navController.navigate("login") },
+                onNavigateToUserSearch = { navController.navigate("userSearch") },
+                userId = userId
+            )
+        }
     }
 }
