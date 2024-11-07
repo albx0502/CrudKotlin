@@ -12,6 +12,7 @@ import androidx.navigation.compose.composable
 import com.example.crudkotlin.ui.auth.ForgotPasswordScreen
 import com.example.crudkotlin.ui.auth.LoginScreen
 import com.example.crudkotlin.ui.auth.RegisterScreen
+import com.example.crudkotlin.ui.profile.ProfileScreen
 
 
 class MainActivity : ComponentActivity() {
@@ -51,6 +52,12 @@ fun AppNavigation() {
                 onNavigateToLogin = { navController.popBackStack() }
             )
         }
+        composable("profile") {
+            ProfileScreen(
+                onLogout = { navController.navigate("login") }
+            )
+        }
+
         // Puedes agregar más pantallas aquí, como "profile", cuando estén listas
     }
 }

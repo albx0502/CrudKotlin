@@ -64,6 +64,8 @@ dependencies {
     implementation(libs.firebase.auth.ktx)
     implementation(libs.androidx.espresso.core)
     implementation(libs.androidx.constraintlayout.compose.android)
+    implementation(libs.firebase.firestore.ktx)
+    implementation(libs.firebase.storage.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -77,5 +79,8 @@ dependencies {
 
     implementation (libs.androidx.material.icons.extended) // o la última versión disponible
     implementation (libs.androidx.navigation.compose)
+
+    implementation(libs.coil.compose)
+
 
 }
