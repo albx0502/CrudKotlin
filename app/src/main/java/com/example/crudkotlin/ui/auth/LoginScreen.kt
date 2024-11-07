@@ -85,7 +85,10 @@ fun LoginScreen(
             Text("Register")
         }
 
-        TextButton(onClick = onNavigateToForgotPassword) {
+        TextButton(onClick = {
+            Log.d("LoginScreen", "Forgot Password button clicked")
+            onNavigateToForgotPassword()
+        }) {
             Text("Forgot Password?")
         }
     }

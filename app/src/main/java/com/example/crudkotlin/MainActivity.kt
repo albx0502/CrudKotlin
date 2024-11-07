@@ -9,6 +9,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.composable
+import com.example.crudkotlin.ui.auth.ForgotPasswordScreen
 import com.example.crudkotlin.ui.auth.LoginScreen
 import com.example.crudkotlin.ui.auth.RegisterScreen
 
@@ -35,7 +36,7 @@ fun AppNavigation() {
             LoginScreen(
                 onLoginSuccess = { navController.navigate("profile") },
                 onNavigateToRegister = { navController.navigate("register") },
-                onNavigateToForgotPassword = { /* Navegar a la pantalla de recuperación */ }
+                onNavigateToForgotPassword = { navController.navigate("forgotPassword") } // Navegación corregida
             )
         }
         composable("register") {
@@ -44,6 +45,12 @@ fun AppNavigation() {
                 onNavigateToLogin = { navController.popBackStack() }
             )
         }
-        // Puedes agregar más pantallas aquí, como "profile" o "forgotPassword", cuando estén listas
+        composable("forgotPassword") { // Pantalla de recuperación de contraseña
+            ForgotPasswordScreen(
+                onPasswordResetSuccess = { navController.navigate("login") },
+                onNavigateToLogin = { navController.popBackStack() }
+            )
+        }
+        // Puedes agregar más pantallas aquí, como "profile", cuando estén listas
     }
 }
