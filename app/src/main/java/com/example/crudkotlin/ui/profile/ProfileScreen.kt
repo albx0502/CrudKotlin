@@ -18,29 +18,32 @@ import com.google.firebase.firestore.FirebaseFirestore
 fun ProfileScreen(
     onLogout: () -> Unit,
     onNavigateToUserSearch: () -> Unit,
-    userId: String? = null // Parámetero opcional userId para identificar el perfil a cargar
+    onNavigateToUserManagement: () -> Unit, // Navegación a gestión de usuarios para admin
+    userId: String? = null
 ) {
     val auth = FirebaseAuth.getInstance()
     val db = FirebaseFirestore.getInstance()
-    val isOwnProfile = userId == null // Verifica si es el perfil propio o de otro usuario
+    val isOwnProfile = userId == null
 
     var description by remember { mutableStateOf(TextFieldValue("")) }
     var name by remember { mutableStateOf(TextFieldValue("")) }
     var email by remember { mutableStateOf("") }
     var avatarChoice by remember { mutableStateOf("avatar1") }
     var saveError by remember { mutableStateOf<String?>(null) }
+    var isAdmin by remember { mutableStateOf(false) } // Variable para almacenar si el usuario es admin
 
-    // Cargar el perfil del usuario especificado o el perfil propio
+    // Cargar el perfil del usuario especificado o el perfil propio y verificar si es admin
     LaunchedEffect(userId) {
         val profileId = userId ?: auth.currentUser?.uid
         profileId?.let {
             loadUserProfile(
                 userId = it,
-                onProfileLoaded = { descriptionText, nameText, emailText, avatarSelected ->
+                onProfileLoaded = { descriptionText, nameText, emailText, avatarSelected, role ->
                     description = TextFieldValue(descriptionText)
                     name = TextFieldValue(nameText)
                     email = emailText ?: ""
                     avatarChoice = avatarSelected ?: "avatar1"
+                    isAdmin = role == "admin" // Determinar si el usuario es admin
                 },
                 onError = { error -> saveError = error }
             )
@@ -63,25 +66,6 @@ fun ProfileScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Si es el perfil propio, mostrar el selector de avatar
-        if (isOwnProfile) {
-            Text("Elige tu avatar:")
-            Row(horizontalArrangement = Arrangement.Center) {
-                listOf("avatar1", "avatar2", "avatar3", "avatar4", "avatar5").forEach { avatar ->
-                    IconButton(onClick = { avatarChoice = avatar }) {
-                        Image(
-                            painter = painterResource(id = getAvatarResource(avatar)),
-                            contentDescription = null,
-                            modifier = Modifier.size(48.dp)
-                        )
-                    }
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Mostrar nombre, correo y descripción (si es el perfil propio, se puede editar)
         Text(text = "Nombre: ${name.text}", style = MaterialTheme.typography.bodyLarge)
         if (!isOwnProfile) {
             Text(text = "Correo: $email", style = MaterialTheme.typography.bodyMedium)
@@ -123,6 +107,18 @@ fun ProfileScreen(
             Button(onClick = onNavigateToUserSearch, modifier = Modifier.fillMaxWidth()) {
                 Text("Buscar Usuarios")
             }
+
+            // Solo visible para administradores
+            if (isAdmin) {
+                Spacer(modifier = Modifier.height(16.dp))
+                Button(
+                    onClick = onNavigateToUserManagement,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Gestión de Usuarios")
+                }
+            }
+
             Spacer(modifier = Modifier.height(16.dp))
             Button(
                 onClick = {
@@ -181,26 +177,23 @@ fun saveUserProfile(name: String, description: String, avatarChoice: String, onS
 
 fun loadUserProfile(
     userId: String,
-    onProfileLoaded: (String, String, String?, String?) -> Unit, // Cambiado para mantener el orden correcto de los datos
+    onProfileLoaded: (String, String, String?, String?, String?) -> Unit, // Añadimos parámetro role
     onError: (String) -> Unit
 ) {
     val db = FirebaseFirestore.getInstance()
-    val auth = FirebaseAuth.getInstance()
 
     db.collection("users").document(userId)
         .get()
         .addOnSuccessListener { document ->
             val description = document.getString("description") ?: ""
             val name = document.getString("name") ?: ""
-            val avatarChoice = document.getString("avatarChoice") ?: "avatar1" // Valor predeterminado si no existe
-            val email = document.getString("email") ?: "" // Asegúrate de que el campo email exista en Firestore
+            val avatarChoice = document.getString("avatarChoice") ?: "avatar1"
+            val email = document.getString("email") ?: ""
+            val role = document.getString("role") ?: "user"
 
-            // Llama al callback con los datos, en el orden correcto
-            onProfileLoaded(description, name, email, avatarChoice)
+            onProfileLoaded(description, name, email, avatarChoice, role)
         }
         .addOnFailureListener { e ->
             onError(e.message ?: "Error al cargar el perfil")
         }
 }
-
-

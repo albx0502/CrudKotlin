@@ -13,6 +13,8 @@ import com.example.crudkotlin.ui.auth.LoginScreen
 import com.example.crudkotlin.ui.auth.RegisterScreen
 import com.example.crudkotlin.ui.profile.ProfileScreen
 import com.example.crudkotlin.ui.search.UserSearchScreen
+import com.example.crudkotlin.ui.admin.AdminUserManagementScreen
+import com.example.crudkotlin.ui.profile.UserProfileScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,13 +30,17 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
-    NavHost(
-        navController = navController,
-        startDestination = "login"
-    ) {
+
+    NavHost(navController = navController, startDestination = "login") {
         composable("login") {
             LoginScreen(
-                onLoginSuccess = { navController.navigate("profile") },
+                onLoginSuccess = { isAdmin ->
+                    if (isAdmin) {
+                        navController.navigate("profile")
+                    } else {
+                        navController.navigate("profile")
+                    }
+                },
                 onNavigateToRegister = { navController.navigate("register") },
                 onNavigateToForgotPassword = { navController.navigate("forgotPassword") }
             )
@@ -54,23 +60,42 @@ fun AppNavigation() {
         composable("profile") {
             ProfileScreen(
                 onLogout = { navController.navigate("login") },
-                onNavigateToUserSearch = { navController.navigate("userSearch") }
+                onNavigateToUserSearch = { navController.navigate("userSearch") },
+                onNavigateToUserManagement = { navController.navigate("admin") } // Navegación para el administrador
             )
         }
         composable("userSearch") {
             UserSearchScreen(
-                onUserSelected = { userId ->
-                    navController.navigate("profile/$userId")
+                onUserSelected = { userId -> navController.navigate("profile/$userId") }
+            )
+        }
+        composable("admin") {
+            AdminUserManagementScreen(
+                onUserEdit = { userId -> navController.navigate("editUser/$userId") },
+                onUserDelete = { userId ->
+                    // Implementa la función deleteUser y actualiza la lista al borrar un usuario
                 }
             )
         }
         composable("profile/{userId}") { backStackEntry ->
             val userId = backStackEntry.arguments?.getString("userId")
-            ProfileScreen(
-                onLogout = { navController.navigate("login") },
-                onNavigateToUserSearch = { navController.navigate("userSearch") },
-                userId = userId
-            )
+            if (userId != null) {
+                UserProfileScreen(
+                    userId = userId,
+                    onBack = { navController.popBackStack() }
+                )
+            }
+        }
+        composable("editUser/{userId}") { backStackEntry ->
+            val userId = backStackEntry.arguments?.getString("userId")
+            if (userId != null) {
+                ProfileScreen(
+                    userId = userId,
+                    onLogout = { navController.navigate("login") },
+                    onNavigateToUserSearch = { navController.navigate("userSearch") },
+                    onNavigateToUserManagement = { navController.navigate("admin") }
+                )
+            }
         }
     }
 }
