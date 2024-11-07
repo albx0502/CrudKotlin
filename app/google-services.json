@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "77774549521",
+    "project_id": "crudkotlin-c5b24",
+    "storage_bucket": "crudkotlin-c5b24.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:77774549521:android:fcd1603c762759103777b0",
+        "android_client_info": {
+          "package_name": "com.example.crudkotlin"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDK-L6J4KFW_W6jGqV1fEUXJ9jP-phkSho"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
