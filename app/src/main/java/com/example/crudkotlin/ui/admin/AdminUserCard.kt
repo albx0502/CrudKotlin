@@ -17,45 +17,35 @@ import com.example.crudkotlin.model.User
 @Composable
 fun AdminUserCard(
     user: User,
-    onEditUser: (String) -> Unit,
-    onDeleteUser: (String) -> Unit
+    onEditUser: () -> Unit,
+    onDeleteUser: () -> Unit
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp)
-            .clickable { onEditUser(user.id) },
-        elevation = CardDefaults.cardElevation()
+            .padding(8.dp)
+            .clickable { onEditUser() }
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Image(
-                painter = rememberAsyncImagePainter(user.avatarChoice),
-                contentDescription = "User Avatar",
-                modifier = Modifier.size(48.dp)
-            )
-
-            Spacer(modifier = Modifier.width(16.dp))
-
-            Column(modifier = Modifier.weight(1f)) {
-                Text(text = user.name, style = MaterialTheme.typography.bodyLarge)
-                Text(text = user.email, style = MaterialTheme.typography.bodyMedium)
-                Text(text = "Rol: ${user.role}", style = MaterialTheme.typography.bodySmall)
-            }
-
-            Spacer(modifier = Modifier.width(8.dp))
-
-            IconButton(onClick = { onEditUser(user.id) }) {
-                Icon(imageVector = Icons.Default.Edit, contentDescription = "Edit User")
-            }
-
-            IconButton(onClick = { onDeleteUser(user.id) }) {
-                Icon(imageVector = Icons.Default.Delete, contentDescription = "Delete User")
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(text = "Nombre: ${user.name}")
+            Text(text = "Correo: ${user.email}")
+            Spacer(modifier = Modifier.height(8.dp))
+            Row {
+                Text(
+                    text = "Editar",
+                    modifier = Modifier
+                        .clickable { onEditUser() }
+                        .padding(8.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "Eliminar",
+                    modifier = Modifier
+                        .clickable { onDeleteUser() }
+                        .padding(8.dp)
+                )
             }
         }
     }
 }
+
