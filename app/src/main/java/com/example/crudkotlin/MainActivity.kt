@@ -89,11 +89,10 @@ fun AppNavigation() {
         composable("editUser/{userId}") { backStackEntry ->
             val userId = backStackEntry.arguments?.getString("userId")
             if (userId != null) {
-                ProfileScreen(
+                UserProfileScreen(
                     userId = userId,
-                    onLogout = { navController.navigate("login") },
-                    onNavigateToUserSearch = { navController.navigate("userSearch") },
-                    onNavigateToUserManagement = { navController.navigate("admin") }
+                    onBack = { navController.popBackStack() },
+                    isEditable = true // Permite la edición cuando se navega desde el administrador
                 )
             }
         }

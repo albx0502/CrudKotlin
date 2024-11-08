@@ -63,6 +63,23 @@ fun ProfileScreen(
             contentDescription = "Imagen de perfil",
             modifier = Modifier.size(100.dp)
         )
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Solo en el perfil propio, mostrar la selección de avatar
+        if (isOwnProfile) {
+            Text("Elige tu avatar:")
+            Row(horizontalArrangement = Arrangement.Center) {
+                listOf("avatar1", "avatar2", "avatar3", "avatar4", "avatar5").forEach { avatar ->
+                    IconButton(onClick = { avatarChoice = avatar }) {
+                        Image(
+                            painter = painterResource(id = getAvatarResource(avatar)),
+                            contentDescription = null,
+                            modifier = Modifier.size(48.dp)
+                        )
+                    }
+                }
+            }
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 

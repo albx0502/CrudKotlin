@@ -20,13 +20,15 @@ import com.example.crudkotlin.utils.getAvatarResource
 @Composable
 fun UserProfileScreen(
     userId: String,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    isEditable: Boolean = false // Añadir el parámetro isEditable con un valor por defecto
 ) {
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var avatarChoice by remember { mutableStateOf("avatar1") }
     var errorMessage by remember { mutableStateOf<String?>(null) }
+    var saveError by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(userId) {
         loadUserProfile(
@@ -59,10 +61,49 @@ fun UserProfileScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Mostrar nombre, correo y descripción del perfil
-        Text(text = "Nombre: $name", style = MaterialTheme.typography.bodyLarge)
-        Text(text = "Correo: $email", style = MaterialTheme.typography.bodyMedium)
-        Text(text = "Descripción: $description", style = MaterialTheme.typography.bodyMedium)
+        if (isEditable) {
+            TextField(
+                value = name,
+                onValueChange = { name = it },
+                label = { Text("Nombre") },
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+
+            TextField(
+                value = description,
+                onValueChange = { description = it },
+                label = { Text("Descripción") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(
+                onClick = {
+                    saveUserProfile(
+                        userId = userId,
+                        name = name,
+                        description = description,
+                        avatarChoice = avatarChoice,
+                        onSuccess = { saveError = "Cambios guardados" },
+                        onError = { error -> saveError = error }
+                    )
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Guardar cambios")
+            }
+
+            saveError?.let {
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(text = it, color = if (it == "Cambios guardados") Color.Green else Color.Red)
+            }
+        } else {
+            Text(text = "Nombre: $name", style = MaterialTheme.typography.bodyLarge)
+            Text(text = "Correo: $email", style = MaterialTheme.typography.bodyMedium)
+            Text(text = "Descripción: $description", style = MaterialTheme.typography.bodyMedium)
+        }
 
         errorMessage?.let {
             Spacer(modifier = Modifier.height(8.dp))
@@ -75,6 +116,28 @@ fun UserProfileScreen(
             Text("Volver")
         }
     }
+}
+
+// Guarda el perfil actualizado
+fun saveUserProfile(
+    userId: String,
+    name: String,
+    description: String,
+    avatarChoice: String,
+    onSuccess: () -> Unit,
+    onError: (String) -> Unit
+) {
+    val db = Firebase.firestore
+    val userProfile = mapOf(
+        "name" to name,
+        "description" to description,
+        "avatarChoice" to avatarChoice
+    )
+
+    db.collection("users").document(userId)
+        .update(userProfile)
+        .addOnSuccessListener { onSuccess() }
+        .addOnFailureListener { e -> onError(e.message ?: "Error al guardar") }
 }
 
 
